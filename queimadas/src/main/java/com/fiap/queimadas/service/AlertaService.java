@@ -1,46 +1,49 @@
 package com.fiap.queimadas.service;
 
-import com.fiap.queimadas.model.Alerta;
-import com.fiap.queimadas.model.Sensor;
-import com.fiap.queimadas.repository.AlertaRepository;
-import com.fiap.queimadas.repository.SensorRepository;
+import com.fiap.queimadas.model.TipoFoco;
+import com.fiap.queimadas.repository.AgenteAmbientalRepository;
+import com.fiap.queimadas.repository.FocoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class AlertaService {
+    @Autowired
+    private FocoRepository focoRepository;
+    
+    @Autowired
+    private AgenteAmbientalRepository agenteRepository;
 
-    private final AlertaRepository alertaRepository;
-    private final SensorRepository sensorRepository;
-
-    public AlertaService(AlertaRepository alertaRepository, SensorRepository sensorRepository) {
-        this.alertaRepository = alertaRepository;
-        this.sensorRepository = sensorRepository;
+    public long contarTotalFocos() {
+        return focoRepository.count();
     }
 
-    public List<Alerta> listarTodos() {
-        return alertaRepository.findAll();
+    public long contarTotalAgentes() {
+        return agenteRepository.count();
     }
 
-    public Optional<Alerta> buscarPorId(Long id) {
-        return alertaRepository.findById(id);
+    public Map<TipoFoco, Long> contarFocosPorTipo() {
+        return focoRepository.findAll().stream()
+                .filter(f -> f.getTipo() != null)
+                .collect(Collectors.groupingBy(
+                    f -> f.getTipo(),
+                    Collectors.counting()
+                ));
     }
 
-    public Alerta salvar(Alerta alerta) {
-        if (alerta.getSensor() != null && alerta.getSensor().getId() != null) {
-            Sensor sensor = sensorRepository.findById(alerta.getSensor().getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Sensor não encontrado"));
-            alerta.setSensor(sensor);
-        } else {
-            throw new IllegalArgumentException("Sensor é obrigatório");
-        }
-
-        return alertaRepository.save(alerta);
-    }
-
-    public void deletar(Long id) {
-        alertaRepository.deleteById(id);
+    public Map<String, Long> contarFocosPorMes() {
+        return focoRepository.findAll().stream()
+                .filter(f -> f.getDataHora() != null)
+                .filter(f -> f.getDataHora().isAfter(LocalDateTime.now().minusMonths(6)))
+                .collect(Collectors.groupingBy(
+                        f -> f.getDataHora().format(DateTimeFormatter.ofPattern("MM/yyyy")),
+                        Collectors.counting()
+                ));
     }
 }

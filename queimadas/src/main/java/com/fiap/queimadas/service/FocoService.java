@@ -7,6 +7,7 @@ import com.fiap.queimadas.repository.SensorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,12 +28,17 @@ public class FocoService {
     }
 
     public Foco salvar(Foco foco) {
+        // Se não tiver data/hora, define a atual
+        if (foco.getDataHora() == null) {
+            foco.setDataHora(LocalDateTime.now());
+        }
+
+        // Verifica e carrega o sensor se necessário
         if (foco.getSensor() != null && foco.getSensor().getId() != null) {
-            Sensor sensor = sensorRepository.findById(foco.getSensor().getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Sensor não encontrado"));
-            foco.setSensor(sensor);
-        } else {
-            throw new IllegalArgumentException("Sensor é obrigatório");
+            Optional<Sensor> sensorOpt = sensorRepository.findById(foco.getSensor().getId());
+            if (sensorOpt.isPresent()) {
+                foco.setSensor(sensorOpt.get());
+            }
         }
 
         return focoRepository.save(foco);
