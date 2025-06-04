@@ -1,0 +1,204 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Monitoramento de Queimadas</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .dashboard {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .card h2 {
+            margin: 0;
+            color: #333;
+            font-size: 2em;
+        }
+
+        .card p {
+            margin: 5px 0 0;
+            color: #666;
+        }
+
+        .charts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .navbar {
+            background-color: #2e7d32;
+            padding: 15px 30px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            margin-bottom: 30px;
+        }
+
+        .navbar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            color: #ffffff;
+            font-size: 1.5em;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-links li a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-links li a:hover {
+            background-color: #388e3c;
+        }
+    </style>
+</head>
+<body>
+
+
+<nav class="navbar">
+    <div class="navbar-container">
+        <a th:href="@{/}" class="logo">🌿 EcoAlerta</a>
+        <ul class="nav-links">
+            <li><a th:href="@{/regioes}">Regiões</a></li>
+            <li><a th:href="@{/sensores}">Sensores</a></li>
+            <li><a th:href="@{/focos}">Focos</a></li>
+            <li><a th:href="@{/agentes}">Agentes</a></li>
+        </ul>
+    </div>
+</nav>
+
+
+
+<div class="dashboard">
+
+    <div class="cards">
+        <div class="card">
+            <h2 th:text="${totalFocos}">0</h2>
+            <p>Total de Focos</p>
+        </div>
+        <div class="card">
+            <h2 th:text="${totalAgentes}">0</h2>
+            <p>Agentes Cadastrados</p>
+        </div>
+    </div>
+
+    <div class="charts">
+        <div class="chart-container">
+            <canvas id="focosPorTipoChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="focosPorMesChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    // Dados para o gráfico de tipos de foco
+    const focosPorTipo = /*[[${focosPorTipo}]]*/ {};
+    new Chart(document.getElementById('focosPorTipoChart'), {
+        type: 'pie',
+        data: {
+            labels: Object.keys(focosPorTipo),
+            datasets: [{
+                data: Object.values(focosPorTipo),
+                backgroundColor: [
+                    '#FF6384',
+                    '#36A2EB',
+                    '#FFCE56',
+                    '#4BC0C0'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Distribuição de Focos por Tipo'
+                }
+            }
+        }
+    });
+
+
+    // Dados para o gráfico de focos por mês
+    const focosPorMes = /*[[${focosPorMes}]]*/ {};
+    new Chart(document.getElementById('focosPorMesChart'), {
+        type: 'line',
+        data: {
+            labels: Object.keys(focosPorMes),
+            datasets: [{
+                label: 'Focos Detectados',
+                data: Object.values(focosPorMes),
+                borderColor: '#36A2EB',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Focos Detectados por Mês'
+                }
+            }
+        }
+
+
+    });
+</script>
+</body>
+</html>

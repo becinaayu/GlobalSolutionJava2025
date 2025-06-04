@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Focos de Calor/Fumaça</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2e7d32;
+            margin-bottom: 30px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        a.button {
+            display: inline-block;
+            background-color: #2e7d32;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        a.button:hover {
+            background-color: #1b5e20;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        tr:hover {
+            background-color: #f1f8e9;
+        }
+
+        .actions a {
+            margin-right: 10px;
+            color: #2e7d32;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .actions a:hover {
+            text-decoration: underline;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 10px;
+            color: #2e7d32;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Lista de Focos</h1>
+
+    <a th:href="@{/focos/novo}" class="button">+ Novo Foco</a>
+
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Data/Hora</th>
+            <th>Tipo</th>
+            <th>Coordenada</th>
+            <th>Sensor</th>
+            <th>Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="foco : ${focos}">
+            <td th:text="${foco.id}"></td>
+            <td th:text="${#temporals.format(foco.dataHora, 'dd/MM/yyyy HH:mm')}"></td>
+            <td th:text="${foco.tipo}"></td>
+            <td th:text="${foco.latitude} + ' | ' + ${foco.longitude}"></td>
+            <td th:text="${foco.sensor != null ? foco.sensor.identificacao : '—'}"></td>
+            <td class="actions">
+                <a th:href="@{|/focos/editar/${foco.id}|}">Editar</a>
+                <a th:href="@{|/focos/deletar/${foco.id}|}"
+                   onclick="return confirm('Deseja mesmo deletar?');">Deletar</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <a th:href="@{/}" class="back-link">← Voltar ao Início</a>
+</div>
+</body>
+</html>

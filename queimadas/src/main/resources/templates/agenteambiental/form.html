@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulário Agente Ambiental</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f0f4f8;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .form-container {
+            background: #ffffff;
+            max-width: 500px;
+            margin: auto;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2e7d32;
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+
+        button {
+            background-color: #2e7d32;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #1b5e20;
+        }
+
+        a {
+            display: inline-block;
+            margin-left: 15px;
+            color: #2e7d32;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="form-container">
+    <h1 th:text="${agente.id != null} ? 'Editar Agente' : 'Novo Agente'"></h1>
+
+    <form th:action="@{/agentes/salvar}" th:object="${agente}" method="post">
+        <input type="hidden" th:field="*{id}" />
+
+        <div>
+            <label>Nome:</label>
+            <input type="text" th:field="*{nome}" placeholder="Nome completo" required/>
+        </div>
+
+        <div>
+            <label>Telefone:</label>
+            <input type="text" th:field="*{telefone}" placeholder="(xx) xxxxx-xxxx" required/>
+        </div>
+
+        <button type="submit">Salvar</button>
+        <a th:href="@{/agentes}">Cancelar</a>
+    </form>
+</div>
+</body>
+</html>
